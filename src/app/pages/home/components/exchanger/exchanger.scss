@@ -1,0 +1,25 @@
+.root {
+  display: grid;
+  background: white;
+  border-radius: 32px;
+  padding: 32px;
+  width: 400px;
+  gap: 20px;
+
+  @media (max-width: 480px) {
+    width: 80vw;
+    padding: 24px;
+  }
+
+  @media (max-width: 320px) {
+    width: 90vw;
+    padding: 16px;
+  }
+}
+
+.rate-block {
+  display: grid;
+  text-align: center;
+  min-height: 50px;
+}
+

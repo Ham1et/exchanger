@@ -1,0 +1,62 @@
+<div class="root">
+  <div class="rate-block">
+    <div class="font-bold">Exchange rate</div>
+
+    @if (rate() && !isLoading()) {
+    <div>1 {{from().short_code}} = {{rate()}} {{to().short_code}}</div>
+    }
+  </div>
+  <div class="grid gap-4">
+    <p-floatlabel variant="on" class="grid!">
+      <p-inputnumber
+        [min]="0"
+        [(ngModel)]="amount"
+        mode="currency"
+        [currency]="from().short_code"
+        minFractionDigits="0"
+        maxFractionDigits="2"
+        [invalid]="+amount() < 1"
+        inputId="amount"></p-inputnumber>
+      <label for="amount">Amount</label>
+    </p-floatlabel>
+
+    <div class="grid gap-2">
+      <p-floatlabel variant="on" class="grid!">
+        <p-select
+          [options]="options()"
+          [(ngModel)]="from"
+          optionLabel="fullName"
+          [filter]="true"
+          filterBy="fullName"
+          inputId="from" />
+        <label class="font-normal!" for="from">From</label>
+      </p-floatlabel>
+
+      <p-button
+        icon="pi pi-arrow-right-arrow-left"
+        [rounded]="true"
+        [text]="true"
+        [raised]="true"
+        class="grid! justify-center"
+        (click)="swapCurrencies()" />
+
+      <p-floatlabel variant="on" class="grid!">
+        <p-select
+          [options]="options()"
+          [(ngModel)]="to"
+          optionLabel="fullName"
+          [filter]="true"
+          filterBy="fullName"
+          inputId="to" />
+        <label class="font-normal!" id="to">To</label>
+      </p-floatlabel>
+    </div>
+  </div>
+
+  <div class="result">
+    @if (result()) {
+    <div>{{amount() | currency: ' '}} {{from().name}} =</div>
+    <div class="font-semibold">{{result() | currency: ' '}} {{to().name}}</div>
+    }
+  </div>
+</div>
