@@ -3,10 +3,6 @@
 
 @plugin "tailwindcss-primeui";
 
-html.preload body {
-  display: none;
-}
-
 #app-loader {
   position: fixed;
   inset: 0;

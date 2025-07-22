@@ -4,9 +4,10 @@ import { App } from './app/app';
 
 bootstrapApplication(App, appConfig)
   .then(() => {
-    const loader = document.getElementById('app-loader');
-    if (loader) {
-      loader.remove();
-    }
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.documentElement.classList.remove('preload');
+      const loader = document.getElementById('app-loader');
+      if (loader) loader.remove();
+    }));
   })
   .catch(err => console.error(err));
