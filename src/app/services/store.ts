@@ -6,10 +6,11 @@ import { CurrencyBeacon } from '../api/currency-beacon';
   providedIn: 'root',
 })
 export class Store {
+  readonly isGlobalLoading = signal(false);
   readonly currencies = signal<Currency[]>([]);
 
   constructor(private currencyBeacon: CurrencyBeacon) {
-    this.initCurrencies()
+    this.initCurrencies();
   }
 
   initCurrencies(): void {
@@ -19,11 +20,13 @@ export class Store {
         this.currencies.set(storedCurrencies);
         return;
       }
-    } catch (_){}
+    } catch (_) {}
+    this.isGlobalLoading.set(true);
     this.currencyBeacon.getCurrencies().subscribe({
       next: data => {
         this.currencies.set(data.response);
         localStorage.setItem('currencies', JSON.stringify(data.response));
+        this.isGlobalLoading.set(false);
       },
       error: err => {
         console.error('Error fetching currencies:', err);

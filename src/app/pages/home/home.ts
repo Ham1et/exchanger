@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Exchanger } from './components/exchanger/exchanger';
+import { Store } from '../../services/store';
 
 @Component({
   standalone: true,
@@ -9,4 +10,6 @@ import { Exchanger } from './components/exchanger/exchanger';
   styleUrl: './home.scss',
   imports: [Exchanger],
 })
-export class Home {}
+export class Home {
+  constructor(public store: Store) {}
+}

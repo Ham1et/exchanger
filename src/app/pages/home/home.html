@@ -1,3 +1,9 @@
-<div class="justify-center items-center flex">
-  <app-exchanger/>
+@if (store.isGlobalLoading()) {
+<div id="app-loader">
+  <div class="spinner"></div>
 </div>
+} @else {
+<div class="justify-center items-center flex">
+  <app-exchanger />
+</div>
+}
