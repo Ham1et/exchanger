@@ -2,3 +2,32 @@
 @import "primeicons/primeicons.css";
 
 @plugin "tailwindcss-primeui";
+
+html.preload body {
+  display: none;
+}
+
+#app-loader {
+  position: fixed;
+  inset: 0;
+  background-color: white;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #d3d3d3;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

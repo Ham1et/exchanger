@@ -5,9 +5,7 @@ import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
-import { IftaLabel } from 'primeng/iftalabel';
 import { FloatLabel } from 'primeng/floatlabel';
-import { InputText } from 'primeng/inputtext';
 import { finalize } from 'rxjs';
 import { CurrencyPipe } from '@angular/common';
 
@@ -44,7 +42,6 @@ export class Exchanger {
   readonly from = signal<CurrencyOption>(DEFAULT_FROM);
   readonly to = signal<CurrencyOption>(DEFAULT_TO);
   readonly amount = signal(1);
-  readonly result = signal(0);
   readonly rate = signal(0);
   readonly isLoading = signal(false);
 
@@ -59,6 +56,10 @@ export class Exchanger {
     })
   );
 
+  readonly result = computed(() =>
+    +(this.amount() * this.rate()).toFixed(10)
+  );
+
   constructor(
     public store: Store,
     private currencyBeacon: CurrencyBeacon
@@ -67,10 +68,6 @@ export class Exchanger {
       if (this.from().short_code && this.to().short_code) {
         queueMicrotask(() => this.convert());
       }
-    });
-
-    effect(() => {
-      this.result.set(+(this.amount() * this.rate()).toFixed(10));
     });
   }
 
@@ -87,7 +84,6 @@ export class Exchanger {
       .subscribe({
         next: data => {
           const result = +data.response.value.toFixed(10);
-          this.result.set(result);
           this.rate.set(+(result / amount).toFixed(10));
         },
         error: err => {
