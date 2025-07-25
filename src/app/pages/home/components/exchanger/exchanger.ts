@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, signal, untracked } from '@angular/core';
 import { Store } from '../../../../services/store';
 import { CurrencyBeacon } from '../../../../api/currency-beacon';
 import { Select } from 'primeng/select';
@@ -6,8 +6,9 @@ import { InputNumber } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { FloatLabel } from 'primeng/floatlabel';
-import { finalize } from 'rxjs';
+import { debounceTime, finalize, skip } from 'rxjs';
 import { CurrencyPipe } from '@angular/common';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 export interface CurrencyOption {
   fullName: string;
@@ -56,9 +57,7 @@ export class Exchanger {
     })
   );
 
-  readonly result = computed(() =>
-    +(this.amount() * this.rate()).toFixed(10)
-  );
+  readonly result = computed(() => +(this.amount() * this.rate()).toFixed(10));
 
   constructor(
     public store: Store,
@@ -66,7 +65,34 @@ export class Exchanger {
   ) {
     effect(() => {
       if (this.from().short_code && this.to().short_code) {
-        queueMicrotask(() => this.convert());
+        untracked(() => {
+          this.convert();
+        });
+      }
+    });
+
+    toObservable(this.result)
+      .pipe(debounceTime(500), skip(1))
+      .subscribe(() => {
+        const exchange = {
+          id: Date.now(),
+          from: this.from(),
+          to: this.to(),
+          amount: this.amount(),
+          result: this.result(),
+          rate: this.rate(),
+        };
+        if (this.amount() > 0) {
+          this.store.setHistory(exchange);
+        }
+      });
+
+    effect(() => {
+      const data = this.store.backExchange();
+      if (data) {
+        this.from.set(data.from);
+        this.to.set(data.to);
+        this.amount.set(data.amount);
       }
     });
   }

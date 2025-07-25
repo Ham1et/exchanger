@@ -1,0 +1,7 @@
+@for (item of this.store.history(); track item.id) {
+<div (click)="onBack(item.id)" class="cursor-pointer">
+  {{item.from.short_code}} -> {{item.to.short_code}} | {{ item.amount }} -> {{item.result}}
+</div>
+} @empty {
+<div>No exchange history.</div>
+}

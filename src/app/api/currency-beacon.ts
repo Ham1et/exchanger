@@ -10,23 +10,20 @@ import { Currency } from '../common/interfaces/currency.interface';
   providedIn: 'root',
 })
 export class CurrencyBeacon {
-  private baseUrl = 'https://api.currencybeacon.com/v1';
+  public static baseUrl = 'https://api.currencybeacon.com/v1';
 
   constructor(private http: HttpClient) {}
 
   getCurrencies(): Observable<ResponseI<Currency[]>> {
-    return this.http.get<ResponseI<Currency[]>>(`${this.baseUrl}/currencies`, {
-      params: { api_key: environment.apiKey },
-    });
+    return this.http.get<ResponseI<Currency[]>>(`${CurrencyBeacon.baseUrl}/currencies`);
   }
 
   convert(from: string, to: string, amount: number): Observable<ResponseI<Convert>> {
-    return this.http.get<ResponseI<Convert>>(`${this.baseUrl}/convert`, {
+    return this.http.get<ResponseI<Convert>>(`${CurrencyBeacon.baseUrl}/convert`, {
       params: {
         from,
         to,
         amount,
-        api_key: environment.apiKey,
       },
     });
   }

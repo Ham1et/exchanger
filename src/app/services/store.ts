@@ -1,6 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Currency } from '../common/interfaces/currency.interface';
 import { CurrencyBeacon } from '../api/currency-beacon';
+import { History } from '../common/interfaces/history.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -8,9 +10,26 @@ import { CurrencyBeacon } from '../api/currency-beacon';
 export class Store {
   readonly isGlobalLoading = signal(false);
   readonly currencies = signal<Currency[]>([]);
+  readonly backExchange = signal<History | null>(null);
+  private readonly _history = signal<History[]>([]);
 
   constructor(private currencyBeacon: CurrencyBeacon) {
     this.initCurrencies();
+  }
+
+  get history(): WritableSignal<History[]> {
+    return this._history;
+  }
+
+  setHistory(newHistory: History) {
+    this._history.update(prev => [newHistory, ...prev.slice(0, environment.historyLimit - 1)]);
+  }
+
+  historyBack(id: number) {
+    const data = this._history().find(v => v.id === id);
+    if (data) {
+      this.backExchange.set(data);
+    }
   }
 
   initCurrencies(): void {
